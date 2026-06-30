@@ -103,6 +103,14 @@ try {
 
     <h2>Últimos 20 registros</h2>
 
+
+<div style="margin: 20px 0;">
+    <input type="text" id="buscador" placeholder="Buscar por nombre..." 
+           onkeyup="filtrarTabla()" 
+           style="padding: 8px; width: 300px; border: 1px solid #ccc; border-radius: 4px;">
+</div>
+
+
 <div style="margin: 20px 0; font-family: sans-serif;">
     <label style="cursor: pointer; user-select: none;">
         <input type="checkbox" id="chkMostrarDetalles" onchange="alternarColumnas()"> 
@@ -214,6 +222,31 @@ function cerrarModal() {
     modal.style.display = 'none'; // Oculta la ventana
 }
 </script>
+
+<script>
+function filtrarTabla() {
+    // Obtenemos el valor del input y lo pasamos a minúsculas para comparar mejor
+    const filtro = document.getElementById('buscador').value.toLowerCase();
+    const tabla = document.querySelector('table');
+    const filas = tabla.getElementsByTagName('tr');
+
+    // Empezamos desde 1 para saltar la cabecera (thead)
+    for (let i = 1; i < filas.length; i++) {
+        const celdaNombre = filas[i].getElementsByTagName('td')[1]; // La columna 1 es 'Nombre'
+        
+        if (celdaNombre) {
+            const texto = celdaNombre.textContent || celdaNombre.innerText;
+            // Si el nombre contiene el texto buscado, se muestra, si no, se oculta
+            if (texto.toLowerCase().indexOf(filtro) > -1) {
+                filas[i].style.display = "";
+            } else {
+                filas[i].style.display = "none";
+            }
+        }
+    }
+}
+</script>
+
 
 <div id="miModalFoto" class="modal-foto" onclick="cerrarModal()">
     <span class="modal-cerrar" onclick="cerrarModal()">&times;</span>
