@@ -169,32 +169,19 @@ try {
                     
                     <td>
 
-                    <!--
-                        <div style="display: flex; flex-direction: column; gap: 6px;">
-                            <a href="eliminar.php?id=<?php echo $prod['id']; ?>" 
-                               onclick="return confirm('¿Estás seguro de que deseas eliminar este producto?');" 
-                               style="padding: 6px 12px; background-color: #dc3545; color: white; text-decoration: none; border-radius: 4px; font-size: 14px; text-align: center;">
-                               Eliminar
-                            </a>
-                            <form action="cambiar_foto.php" method="POST" enctype="multipart/form-data" style="margin: 0;">
-                                <input type="hidden" name="id" value="<?php echo $prod['id']; ?>">
-                                <label style="padding: 6px 12px; background-color: #28a745; color: white; border-radius: 4px; font-size: 14px; text-align: center; cursor: pointer; display: block;">
-                                    Cambiar Foto
-                                    <input type="file" name="nueva_foto" accept="image/*" required onchange="this.form.submit();" style="display: none;">
-                                </label>
-                            </form>
-                        </div>
-
-
-
-                        <button type="button" onclick="abrirModalPrestamo('<?php echo $prod['id']; ?>', 'uploads/<?php echo $prod['foto']; ?>', '<?php echo $prod['preciofinal']; ?>')">
-                            Préstamo
-                        </button>-->
+                    
                         <div style="display: flex; flex-direction: column; gap: 6px;">
         <button type="button" 
-                onclick="abrirModalPrestamo('<?php echo $prod['id']; ?>', 'uploads/<?php echo $prod['foto']; ?>', '<?php echo $prod['preciofinal']; ?>')"
+                onclick="abrirModalPrestamo('<?php echo $prod['id']; ?>', 'uploads/<?php echo $prod['foto']; ?>', '<?php echo $prod['preciovendedor']; ?>')"
                 style="padding: 6px 12px; background-color: #007bff; color: white; border: none; border-radius: 4px; font-size: 14px; cursor: pointer; text-align: center;">
             Préstamo
+        </button>
+
+
+        <button type="button" 
+        onclick="abrirModalPago('<?php echo $prod['id']; ?>', 'uploads/<?php echo $prod['foto']; ?>', '<?php echo $prod['preciovendedor']; ?>')"
+        style="padding: 6px 12px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">
+        Pago
         </button>
 
         <a href="eliminar.php?id=<?php echo $prod['id']; ?>" 
@@ -210,6 +197,7 @@ try {
                 <input type="file" name="nueva_foto" accept="image/*" required onchange="this.form.submit();" style="display: none;">
             </label>
         </form>
+
     </div>
                     </td>
                 </tr>
@@ -281,20 +269,44 @@ function abrirModalPrestamo(id, src, precio) {
     document.getElementById('idProducto').value = id;
     document.getElementById('modalImgProd').src = src;
     document.getElementById('precioBase').value = precio;
+    // Configurar la fecha actual en formato YYYY-MM-DD
+    const hoy = new Date().toISOString().split('T')[0];
+    document.getElementById('fechaPrestamo').value = hoy;
     document.getElementById('modalPrestamo').style.display = 'flex';
 }
 
 function cerrarModalPrestamo() {
     document.getElementById('modalPrestamo').style.display = 'none';
 }
-
 function calcularTotal() {
     let cant = document.getElementById('cant').value;
     let base = document.getElementById('precioBase').value;
-    document.getElementById('preciovendedor').value = (cant * base).toFixed(2);
+    
+    // Si la cantidad está vacía, el total debe ser 0 o vacío
+    if (cant === "") {
+        document.getElementById('precioTotal').value = "";
+    } else {
+        // Multiplicamos y asignamos al input correcto (precioTotal)
+        document.getElementById('precioTotal').value = (parseFloat(cant) * parseFloat(base)).toFixed(2);
+    }
+}
+
+</script>
+<script>
+    function abrirModalPago(id, src, precio) {
+    document.getElementById('idP').value = id;
+    document.getElementById('imgPago').src = src;
+    document.getElementById('precioUnitario').value = precio;
+    document.getElementById('fechaPago').value = new Date().toISOString().split('T')[0];
+    document.getElementById('modalPago').style.display = 'flex';
+}
+
+function calcularPago() {
+    let cant = document.getElementById('cantPago').value;
+    let unit = document.getElementById('precioUnitario').value;
+    document.getElementById('montoPago').value = (cant * unit).toFixed(2);
 }
 </script>
-
 
 <div id="miModalFoto" class="modal-foto" onclick="cerrarModal()">
     <span class="modal-cerrar" onclick="cerrarModal()">&times;</span>
@@ -324,10 +336,52 @@ function calcularTotal() {
             <input type="text" id="precioBase" readonly style="width:100%; border:none; background:#eee;">
             <label>Precio Total:</label>
             <input type="text" name="precioTotal" id="precioTotal" readonly style="width:100%; font-weight:bold;">
+
+            <label>Fecha de Préstamo:</label>
+            <input type="date" name="fechaPrestamo" id="fechaPrestamo" required style="width:100%; margin-bottom:10px;">
+
             <button type="submit" style="margin-top:15px; width:100%;">Confirmar Préstamo</button>
         </form>
     </div>
 </div>
 
+<!-- Ventana Pagos -->
+
+<div id="modalPago" class="modal-foto" style="display:none; justify-content: center; align-items: center;">
+    <div style="background: white; padding: 20px; border-radius: 8px; width: 400px; position: relative;">
+        <span onclick="document.getElementById('modalPago').style.display='none'" style="float:right; cursor:pointer; font-size: 20px;">&times;</span>
+        <h3>Registrar Pago</h3>
+        <img id="imgPago" src="" style="width: 80px; display: block; margin: 0 auto 15px;">
+        
+        <form action="guardar_pago.php" method="POST">
+            <input type="hidden" name="idProducto" id="idP">
+            <input type="hidden" id="precioUnitario"> <label>Vendedor:</label>
+            <select name="idVendedor" required style="width:100%; margin-bottom:10px;">
+                <?php
+                $vendedores = $pdo->query("SELECT id, nombre, apellido FROM vendedores")->fetchAll();
+                foreach($vendedores as $v) echo "<option value='{$v['id']}'>{$v['apellido']} {$v['nombre']}</option>";
+                ?>
+            </select>
+            
+            <label>Cantidad:</label>
+            <input type="number" name="cantidad" id="cantPago" required style="width:100%;" oninput="calcularPago()">
+            
+            <label>Monto:</label>
+            <input type="text" name="monto" id="montoPago" readonly style="width:100%; font-weight:bold; background:#eee;">
+            
+            <label>Tipo Pago:</label>
+            <select name="tipoPago" style="width:100%; margin-bottom:10px;">
+                <option value="1">Transferencia</option>
+                <option value="2">Efectivo</option>
+            </select>
+            
+            <label>Fecha:</label>
+            <input type="date" name="fecha" id="fechaPago" required style="width:100%; margin-bottom:10px;">
+            
+            <button type="submit" style="width:100%; padding:10px; background:#28a745; color:white; border:none;">Guardar Pago</button>
+        </form>
+    </div>
+</div>
+        <!-- Fin Pagos -->
 </body>
 </html>
