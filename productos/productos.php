@@ -209,6 +209,7 @@ try {
         <?php endif; ?>
     </tbody>
 </table>
+<!--
 <script>
 function alternarColumnas() {
     // Detectamos si el checkbox está marcado o no
@@ -307,7 +308,7 @@ function calcularPago() {
     document.getElementById('montoPago').value = (cant * unit).toFixed(2);
 }
 </script>
-
+        -->
 <div id="miModalFoto" class="modal-foto" onclick="cerrarModal()">
     <span class="modal-cerrar" onclick="cerrarModal()">&times;</span>
     <img class="modal-contenido" id="imgAmpliada">
@@ -383,5 +384,9 @@ function calcularPago() {
     </div>
 </div>
         <!-- Fin Pagos -->
+
+
+<script src="main.js"></script>
+
 </body>
 </html>
