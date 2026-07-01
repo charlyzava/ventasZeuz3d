@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             str_replace(',', '.', $_POST['preciomayorista']),
             str_replace(',', '.', $_POST['costo']),
             $_POST['tiempoimpresion'],
-            $_POST['tiempostprocesado']
+            $_POST['tiempopostprocesado']
         ]);
         
         // 2. Obtener el ID recién creado

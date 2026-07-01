@@ -94,7 +94,7 @@ try {
         <input type="text" name="preciomayorista" placeholder="Precio Mayorista"><br>
         <input type="text" name="costo" placeholder="Costo"><br>
         <input type="number" name="tiempoimpresion" placeholder="Tiempo Impresión"><br>
-        <input type="number" name="tiempostprocesado" placeholder="Tiempo Post-Procesado"><br>
+        <input type="number" name="tiempopostprocesado" placeholder="Tiempo Post-Procesado"><br>
         <input type="file" name="foto" accept="image/*" required><br>
         <button type="submit">Guardar Producto</button>
     </form>
@@ -168,6 +168,8 @@ try {
                     <td class="col-detalle"><?php echo htmlspecialchars($prod['tiempopostprocesado']); ?> min</td>
                     
                     <td>
+
+                    <!--
                         <div style="display: flex; flex-direction: column; gap: 6px;">
                             <a href="eliminar.php?id=<?php echo $prod['id']; ?>" 
                                onclick="return confirm('¿Estás seguro de que deseas eliminar este producto?');" 
@@ -182,6 +184,33 @@ try {
                                 </label>
                             </form>
                         </div>
+
+
+
+                        <button type="button" onclick="abrirModalPrestamo('<?php echo $prod['id']; ?>', 'uploads/<?php echo $prod['foto']; ?>', '<?php echo $prod['preciofinal']; ?>')">
+                            Préstamo
+                        </button>-->
+                        <div style="display: flex; flex-direction: column; gap: 6px;">
+        <button type="button" 
+                onclick="abrirModalPrestamo('<?php echo $prod['id']; ?>', 'uploads/<?php echo $prod['foto']; ?>', '<?php echo $prod['preciofinal']; ?>')"
+                style="padding: 6px 12px; background-color: #007bff; color: white; border: none; border-radius: 4px; font-size: 14px; cursor: pointer; text-align: center;">
+            Préstamo
+        </button>
+
+        <a href="eliminar.php?id=<?php echo $prod['id']; ?>" 
+           onclick="return confirm('¿Estás seguro?');" 
+           style="padding: 6px 12px; background-color: #dc3545; color: white; text-decoration: none; border-radius: 4px; font-size: 14px; text-align: center;">
+           Eliminar
+        </a>
+
+        <form action="cambiar_foto.php" method="POST" enctype="multipart/form-data" style="margin: 0;">
+            <input type="hidden" name="id" value="<?php echo $prod['id']; ?>">
+            <label style="padding: 6px 12px; background-color: #28a745; color: white; border-radius: 4px; font-size: 14px; text-align: center; cursor: pointer; display: block;">
+                Cambiar Foto
+                <input type="file" name="nueva_foto" accept="image/*" required onchange="this.form.submit();" style="display: none;">
+            </label>
+        </form>
+    </div>
                     </td>
                 </tr>
             <?php endforeach; ?>
@@ -247,10 +276,57 @@ function filtrarTabla() {
 }
 </script>
 
+<script>
+function abrirModalPrestamo(id, src, precio) {
+    document.getElementById('idProducto').value = id;
+    document.getElementById('modalImgProd').src = src;
+    document.getElementById('precioBase').value = precio;
+    document.getElementById('modalPrestamo').style.display = 'flex';
+}
+
+function cerrarModalPrestamo() {
+    document.getElementById('modalPrestamo').style.display = 'none';
+}
+
+function calcularTotal() {
+    let cant = document.getElementById('cant').value;
+    let base = document.getElementById('precioBase').value;
+    document.getElementById('preciovendedor').value = (cant * base).toFixed(2);
+}
+</script>
+
 
 <div id="miModalFoto" class="modal-foto" onclick="cerrarModal()">
     <span class="modal-cerrar" onclick="cerrarModal()">&times;</span>
     <img class="modal-contenido" id="imgAmpliada">
+</div>
+
+
+        <!-- 2da Ventana Modal -->
+<div id="modalPrestamo" class="modal-foto" style="display:none; justify-content: center; align-items: center;">
+    <div style="background: white; padding: 20px; border-radius: 8px; width: 400px; position: relative;">
+        <span onclick="cerrarModalPrestamo()" style="float:right; cursor:pointer; font-size: 20px;">&times;</span>
+        <h3>Nuevo Préstamo</h3>
+        <img id="modalImgProd" src="" style="width: 100px; display: block; margin: 0 auto 15px;">
+        
+        <form action="guardar_prestamo.php" method="POST">
+            <input type="hidden" name="idProducto" id="idProducto">
+            <label>Vendedor:</label>
+            <select name="idVendedor" required style="width:100%; margin-bottom:10px;">
+                <?php
+                $vendedores = $pdo->query("SELECT id, nombre, apellido FROM vendedores")->fetchAll();
+                foreach($vendedores as $v) echo "<option value='{$v['id']}'>{$v['apellido']} {$v['nombre']}</option>";
+                ?>
+            </select>
+            <label>Cantidad:</label>
+            <input type="number" name="cantidad" id="cant" required style="width:100%;" oninput="calcularTotal()">
+            <label>Precio Unitario (Base):</label>
+            <input type="text" id="precioBase" readonly style="width:100%; border:none; background:#eee;">
+            <label>Precio Total:</label>
+            <input type="text" name="precioTotal" id="precioTotal" readonly style="width:100%; font-weight:bold;">
+            <button type="submit" style="margin-top:15px; width:100%;">Confirmar Préstamo</button>
+        </form>
+    </div>
 </div>
 
 </body>
