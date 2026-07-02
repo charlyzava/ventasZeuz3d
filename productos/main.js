@@ -29,6 +29,20 @@ function abrirModalPago(id, src, precio) {
     document.getElementById('modalPago').style.display = 'flex';
 }
 
+function abrirModalModificar(id, nombre, pFinal, pVend, pMay, costo, stock, tImp, tPost) {
+    document.getElementById('modId').value = id;
+    document.getElementById('modNombre').value = nombre;
+    document.getElementById('modPrecioFinal').value = pFinal;
+    document.getElementById('modPrecioVendedor').value = pVend;
+    document.getElementById('modPrecioMayorista').value = pMay;
+    document.getElementById('modCosto').value = costo;
+    document.getElementById('modStock').value = stock;
+    document.getElementById('modTiempoImp').value = tImp;
+    document.getElementById('modTiempoPost').value = tPost;
+    
+    document.getElementById('modalModificar').style.display = 'flex';
+}
+
 /* --- CÁLCULOS --- */
 function calcularTotal() {
     let cant = document.getElementById('cant').value;
