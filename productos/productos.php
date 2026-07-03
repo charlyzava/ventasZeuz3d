@@ -19,7 +19,7 @@ try {
     <link rel="stylesheet" href="./estilos.css">
 </head>
 <body>
-
+<a href="../index.php">Home</a>
     <div class="contenedor">
         <h1>Productos</h1>
         <form action="guardar.php" method="POST" enctype="multipart/form-data">

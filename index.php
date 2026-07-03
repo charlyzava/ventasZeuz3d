@@ -37,5 +37,6 @@ $registros = $stmt->fetchAll();
         <?php endforeach; ?>
     </ul>
         <a href="./productos/productos.php">Productos</a>
+        <a href="./vendedores/vendedores.php">Vendedores</a>
 </body>
 </html>
