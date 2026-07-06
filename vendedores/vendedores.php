@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Consulta de Vendedores</title>
+    <link rel="stylesheet" href="estilos-vendedores.css">
 </head>
 <body>
     <a href="../index.php">Home</a>
@@ -53,10 +54,17 @@
         <p><strong>Celular:</strong> <span id="verCelular"></span></p>
     </div>
 <!-- Agrega este div donde quieras que aparezca la tabla -->
-<div id="tablaPrestamos" style="margin-top: 30px;"></div>
+ <div id="tablaPrestamos" style="width: 100%; overflow-x: auto;"></div>
 
 
 <script>
+function toggleDetalle(id) {
+    const checkbox = document.getElementById(id);
+    const tabla = document.getElementById('detalle_' + id);
+    // Cambiamos a 'block' para asegurar que sea visible independientemente del tipo de elemento
+    tabla.style.display = checkbox.checked ? 'block' : 'none';
+}
+
 function mostrarDatos() {
     const select = document.getElementById('listaVendedores');
     const detalles = document.getElementById('detalles');
@@ -68,13 +76,11 @@ function mostrarDatos() {
         return;
     }
 
-    // 1. Mostrar datos básicos (igual que antes)
     const opcion = select.options[select.selectedIndex];
     document.getElementById('verDni').innerText = opcion.getAttribute('data-dni');
     document.getElementById('verCelular').innerText = opcion.getAttribute('data-celular');
     detalles.style.display = 'block';
 
-    // 2. Cargar tabla de préstamos vía AJAX
     fetch('obtener_prestamos.php?idVendedor=' + select.value)
         .then(response => response.text())
         .then(html => {
@@ -82,6 +88,6 @@ function mostrarDatos() {
         });
 }
 </script>
-    
+    <script src="main.js"></script>
 </body>
 </html>

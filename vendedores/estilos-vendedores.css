@@ -1,0 +1,51 @@
+
+    /* Estilos generales de la tabla */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+    th {
+        background-color: #f4f4f4;
+    }
+    
+    /* Responsive para celulares */
+    @media (max-width: 600px) {
+        table, thead, tbody, th, td, tr {
+            display: block;
+        }
+        /* Ocultar encabezados en celular para ahorrar espacio */
+        thead tr { display: none; }
+        
+        tr { border: 1px solid #ccc; margin-bottom: 10px; }
+        
+        td {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+        }
+        td::before {
+            content: attr(data-label);
+            font-weight: bold;
+        }
+    }
+    
+button {
+    cursor: pointer;
+    transition: background 0.3s;
+}
+button:hover {
+    filter: brightness(0.9);
+}
+
+/* Ajuste para el botón en el formato responsive de celular */
+@media (max-width: 600px) {
+    button {
+        width: 100%; /* El botón ocupará todo el ancho disponible en la fila */
+    }
+}
